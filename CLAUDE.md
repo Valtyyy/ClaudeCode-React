@@ -1,4 +1,4 @@
-# values.trade-bo
+# React back-office template
 
 Back-office frontend. React + TanStack Router (file-based) + TanStack Query + TanStack Form + TypeScript.
 
@@ -13,12 +13,21 @@ Back-office frontend. React + TanStack Router (file-based) + TanStack Query + Ta
 
 Detailed API usage (loaders, search params, query keys, mutations, optimistic updates, form state/validation, etc.) is covered by the `tanstack-router`, `tanstack-query`, `tanstack-form`, and `typescript-rules` skills — they load automatically when relevant. This file only holds project-specific decisions and rules that apply everywhere, so it doesn't repeat what the skills already say.
 
+## Rules
+
+Project-specific conventions too detailed for this file live in `.claude/rules/`:
+
+@.claude/rules/loading-states.md
+@.claude/rules/features.md
+@.claude/rules/tables.md
+
 ## Project structure (layer-based)
 
 ```
 src/
   routes/        # TanStack Router file-based routes (route.tsx + route.lazy.tsx split)
   components/    # Shared/reusable UI components (Tailwind-styled)
+  features/      # Per-resource columns/detail/form/modals/mutations — see .claude/rules/features.md
   hooks/         # Custom hooks (state logic, side effects, DI seams)
   api/           # Fetch functions + queryOptions() factories, one file per resource
   lib/           # Framework-agnostic utilities (no React imports)
@@ -37,6 +46,7 @@ src/
 - **Imports are absolute** from `src/` — no relative-path spaghetti (`../../../`) crossing more than one directory level.
 - **Auth/redirect guards live in `beforeLoad`**, never as conditional rendering inside a route component (avoids flash-of-protected-content).
 - **Data fetching only through TanStack Query** (route loaders + hooks) — no `useEffect` fetch calls.
+- **A table filter is declared on its column and rendered in that column's header.** `meta.filter` on the `ColumnDef`, a popover in the `<th>` — never a filter bar, a search box, or a toolbar above the table. Tables are server-driven throughout (manual pagination/sorting/filtering, `getCoreRowModel` only). Full contract in `.claude/rules/tables.md`.
 - **Secrets never touch the frontend.** No API keys/tokens in `import.meta.env.*` that get bundled client-side; the backend proxies anything sensitive.
 - Delete unused code and debug `console.log()` immediately — don't leave commented-out code, git history is the record.
 

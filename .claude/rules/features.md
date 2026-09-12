@@ -43,6 +43,12 @@ import directly from the specific file they need.
 If a piece of UI or logic is only ever used by one resource's route, it goes in that resource's
 feature folder — not in `components/`.
 
+A table filter is split between exactly two of those files and no third place: the **descriptor**
+goes on the column that owns it in `columns.tsx` (`meta.filter`, see `.claude/rules/tables.md`), and
+the **control it renders** goes in `<resource>-filter.tsx` next to it. A route never renders filter
+JSX — the shared `DataTable` reads the descriptor and paints it into the column's header. If two
+resources need the same control, it stops being a feature file and moves to `components/ui-kit/`.
+
 A record's technical `id` belongs to `*-detail.tsx` and nowhere else: first row of the detail view,
 rendered `font-mono`. Never add it as a `ColumnDef` or to the mobile card — an ID is copy-paste
 support data (to hit the API, file a ticket, query the DB), not something anyone scans a table for,

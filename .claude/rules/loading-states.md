@@ -24,7 +24,7 @@ container collapsed to zero height.
 | Situation                                    | What renders                                                  |
 | -------------------------------------------- | ------------------------------------------------------------- |
 | Route entered, loader resolving               | Route `pendingComponent`: real `PageHeader` + `TableSkeleton`  |
-| List query loading (first load, filter change)| `DataTable isLoading` → `size` skeleton rows / cards           |
+| List query loading (first load, filter change)| `DataTable isLoading` → `TableRowsSkeleton` **under the live header** / `CardListSkeleton` |
 | Page change                                   | Previous page, dimmed — **no skeleton**                        |
 | Detail query in a view/edit modal             | `DetailSkeleton` / `FormSkeleton` inside an already-open modal |
 | Combobox / Select options loading             | Skeleton option rows in the popover                            |
@@ -39,8 +39,15 @@ Compose from it. Do not write ad-hoc placeholder markup in a route or feature co
 import { TableSkeleton, FormSkeleton, DetailSkeleton } from '@/components/ui-kit/skeletons'
 ```
 
-Exports: `TableSkeleton`, `CardListSkeleton`, `FormSkeleton`, `DetailSkeleton`,
-`TextSkeleton`, `AvatarSkeleton`.
+Exports: `TableSkeleton`, `TableRowsSkeleton`, `CardListSkeleton`, `CardGridSkeleton`,
+`FormSkeleton`, `DetailSkeleton`, `TextSkeleton`, `TriggerSkeleton`, `AvatarSkeleton`.
+
+`TableSkeleton` is the whole responsive block — a table shape at `md+`, a card list below — and
+belongs in a route `pendingComponent`, where no table exists yet. `TableRowsSkeleton` is its body
+alone, the rows without the `<Table>` or `<TableHeader>` wrapper, and is what `DataTable` renders
+while a list query is in flight: the real header stays on screen, because it carries the column
+filters and losing it would strand the user (see `.claude/rules/tables.md`). `TableSkeleton`
+composes `TableRowsSkeleton`, so the two geometries cannot drift.
 
 If a new loading shape is genuinely needed, add it to `skeletons.tsx` so the next feature
 reuses it — never inline a one-off.
